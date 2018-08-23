@@ -68,7 +68,7 @@ export function decodeMemoryReference(definition, pointer, state, ...args) {
       }, state); // bytes contain length
 
       return decodeValue(definition, {
-        memory: { start: rawValue + WORD_SIZE, length: bytes }
+        memory: { start: rawValue + WORD_SIZE, length: bytes.length }
       }, state, ...args);
 
     case "array":
@@ -77,7 +77,7 @@ export function decodeMemoryReference(definition, pointer, state, ...args) {
       }, state)).toNumber();  // bytes contain array length
 
       bytes = read({ memory: {
-        start: rawValue + WORD_SIZE, length: bytes * WORD_SIZE
+        start: rawValue + WORD_SIZE, length: bytes.length * WORD_SIZE
       }}, state); // now bytes contain items
 
       return memory.chunk(bytes, WORD_SIZE)
@@ -230,14 +230,14 @@ export function decodeStorageReference(definition, pointer, state, ...args) {
     case "struct":
       let [refs] = args;
 
-      return Object.assign(
+      return pointer.storage && pointer.storage.children ? Object.assign(
         {}, ...Object.entries(pointer.storage.children)
           .map( ([id, childPointer]) => ({
             [childPointer.name]: decode(
               refs[id].definition, { storage: childPointer }, state, ...args
             )
           }))
-      );
+      ) : {};
 
     default:
       debug("Unknown storage reference type: %s", utils.typeIdentifier(definition));

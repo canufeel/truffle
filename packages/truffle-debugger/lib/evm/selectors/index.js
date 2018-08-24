@@ -159,7 +159,7 @@ const evm = createSelectorTree({
         {
           const libReplacedBinary = binary.replace(/__.{38}|0{40}/g, ".{40}");
           const metadataReplacedBinary = libReplacedBinary.replace(/a165627a7a72305820.{64}0029/g, ".{86}");
-          new RegExp(`^${metadataReplacedBinary}`)
+          return new RegExp(`^${metadataReplacedBinary}`)
         };
 
         let matchers = Object.entries(binaries)
